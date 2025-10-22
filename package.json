@@ -4,7 +4,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node node_scripts/chart-server.js"
+    "build" : "npm install",
+    "serve": "node node_scripts/chart-server.js"
   },
   "keywords": [],
   "author": "",
