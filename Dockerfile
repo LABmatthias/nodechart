@@ -21,5 +21,6 @@ COPY . .
 # Expose poort 8080
 EXPOSE 8080
 
+
 # Start je server
 CMD ["node", "node_scripts/chart-server.js"]
