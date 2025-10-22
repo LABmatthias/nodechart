@@ -54,7 +54,7 @@ export async function generateChartScreenshot({ school, leerlingId, schooljaar, 
     args: ['--no-sandbox', '--disable-setuid-sandbox'] // vaak nodig op shared hosting
     });
   const page = await browser.newPage();
-  await page.setViewport({ width: 1000, height: 600 });
+  await page.setViewport({ width: 1000, height: 800 });
 
   console.log(`Opening chart page: ${url}`);
   await page.goto(url, { waitUntil: 'networkidle0' });
