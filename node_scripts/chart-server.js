@@ -24,4 +24,4 @@ app.post("/generate-chart", async (req, res) => {
   }
 });
 
-app.listen(3000, '0.0.0.0', () => console.log("Chart server running on port 3001"));
+app.listen(8080, '0.0.0.0', () => console.log("Chart server running on port 8080"));
