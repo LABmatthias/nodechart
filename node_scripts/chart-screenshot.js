@@ -42,7 +42,7 @@ async function generateChartScreenshot(school, leerlingId, schooljaar, periode) 
 })();*/
 
 // chart-screenshot.js
-import puppeteer from "puppeteer-core";
+import puppeteer from "puppeteer";
 import fs from 'fs';
 import path from 'path';
 
@@ -50,8 +50,8 @@ export async function generateChartScreenshot({ school, leerlingId, schooljaar, 
   const url = `https://apps4lab.be/rapport/chart/${school}/${leerlingId}/${schooljaar}/${periode}`;
 
   const browser = await puppeteer.launch({
-    executablePath: "/usr/bin/google-chrome",
-    headless: true
+    headless: true,
+    args: ['--no-sandbox', '--disable-setuid-sandbox'] // vaak nodig op shared hosting
     });
   const page = await browser.newPage();
   await page.setViewport({ width: 1000, height: 600 });
