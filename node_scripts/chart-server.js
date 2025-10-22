@@ -6,6 +6,12 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+
+app.get("/", (req, res) => {
+  res.send("✅ Chart server is alive!");
+});
+
+
 app.post("/generate-chart", async (req, res) => {
   try {
     const { schoolId, leerlingId, schooljaar, periode } = req.body;
