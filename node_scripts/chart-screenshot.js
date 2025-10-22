@@ -47,7 +47,7 @@ import fs from 'fs';
 import path from 'path';
 
 export async function generateChartScreenshot({ school, leerlingId, schooljaar, periode, saveToFile = false }) {
-  const url = `http://localhost:3000/rapport/chart/${school}/${leerlingId}/${schooljaar}/${periode}`;
+  const url = `http://apps4lab.be/rapport/chart/${school}/${leerlingId}/${schooljaar}/${periode}`;
 
   const browser = await puppeteer.launch({ headless: true });
   const page = await browser.newPage();
