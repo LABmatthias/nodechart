@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "npm install",
-    "serve": "node node_scripts/chart-server.js"
+    "start": "node node_scripts/chart-server.js"
   },
   "keywords": [],
   "author": "",
