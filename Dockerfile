@@ -8,8 +8,6 @@ WORKDIR /usr/src/app
 RUN apt-get update && apt-get install -y \
     chromium \
     chromium-driver \
-    gnupg \
-    ca-certificates \
     fonts-liberation \
     libnss3 \
     libx11-xcb1 \
@@ -35,14 +33,13 @@ RUN apt-get update && apt-get install -y \
 # Kopieer package.json en package-lock.json
 COPY package*.json ./
 # Installeer npm dependencies
-RUN npm install
+RUN npm ci
 # Kopieer projectbestanden
 COPY . .
 
 
-
 # Zet environment variable voor Puppeteer
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 
 # Open poort (optioneel, Cloud Run gebruikt deze dynamisch)
 EXPOSE 8080
