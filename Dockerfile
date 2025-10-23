@@ -4,12 +4,10 @@ FROM node:20-bullseye
 # Werkdirectory instellen
 WORKDIR /usr/src/app
 
-# Kopieer package.json en package-lock.json
-COPY package*.json ./
-
 # Puppeteer en dependencies installeren
 RUN apt-get update && apt-get install -y \
-    wget \
+    chromium \
+    chromium-driver \
     gnupg \
     ca-certificates \
     fonts-liberation \
@@ -34,16 +32,14 @@ RUN apt-get update && apt-get install -y \
     --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
-# Installeer Google Chrome
-RUN wget -q -O /tmp/chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
-    && apt install -y /tmp/chrome.deb \
-    && rm /tmp/chrome.deb
-
+# Kopieer package.json en package-lock.json
+COPY package*.json ./
+# Installeer npm dependencies
+RUN npm install
 # Kopieer projectbestanden
 COPY . .
 
-# Installeer npm dependencies
-RUN npm install
+
 
 # Zet environment variable voor Puppeteer
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome
