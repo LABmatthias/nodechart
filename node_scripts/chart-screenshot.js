@@ -46,6 +46,7 @@ import puppeteer from "puppeteer";
 import fs from 'fs';
 import path from 'path';
 
+/* ORIGINEEL DAT WERKTE
 export async function generateChartScreenshot({ school, leerlingId, schooljaar, periode, saveToFile = false }) {
   const url = `https://apps4lab.be/rapport/chart/${school}/${leerlingId}/${schooljaar}/${periode}`;
 
@@ -55,9 +56,7 @@ export async function generateChartScreenshot({ school, leerlingId, schooljaar, 
         executablePath: process.env.PUPPETEER_EXECUTABLE_PATH
     });
   const page = await browser.newPage();
-  const chartHeight = await page.$eval('#chart-export', el => parseInt(el.dataset.height) || 800);
-  await page.setViewport({ width: 1200, height: chartHeight + 70 });
-  //await page.setViewport({ width: 1000, height: 800 });
+  await page.setViewport({ width: 1000, height: 800 });
 
   await page.goto(url, { waitUntil: 'networkidle0' });
 
@@ -79,6 +78,56 @@ export async function generateChartScreenshot({ school, leerlingId, schooljaar, 
 
   await browser.close();
   return screenshotBuffer;
+}*/
+
+export async function generateChartScreenshot({ school, leerlingId, schooljaar, periode, saveToFile = false }) {
+  const url = `https://apps4lab.be/rapport/chart/${school}/${leerlingId}/${schooljaar}/${periode}`;
+
+  const browser = await puppeteer.launch({
+    headless: 'new',
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
+  });
+
+  try {
+    const page = await browser.newPage();
+
+    // Eerst naar de pagina navigeren
+    await page.goto(url, { waitUntil: 'networkidle0' });
+
+    // Wacht tot het chart-element er is (max 5 seconden)
+    await page.waitForSelector('#chart-export', { timeout: 5000 });
+
+    // Lees dynamisch de hoogte van het chart-element
+    const chartHeight = await page.$eval('#chart-export', el => {
+        const styleHeight = el.style.height;
+        if (styleHeight) return parseInt(styleHeight);
+        return parseInt(el.dataset.height) || 800;
+    });
+
+    // Stel viewport in (breedte 1200, hoogte chartHeight + padding)
+    await page.setViewport({ width: 1200, height: chartHeight + 10 });
+ 
+    // Extra wachttijd voor React chart render
+    await new Promise(r => setTimeout(r, 500));
+
+    // Screenshot in base64
+    const screenshotBuffer = await page.screenshot({ encoding: 'base64' });
+
+    // Optioneel opslaan naar bestand
+    if (saveToFile) {
+      const outputDir = path.resolve('./charts');
+      if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir);
+
+      const filePath = path.join(outputDir, `chart_${leerlingId}_${schooljaar}_${periode}.png`);
+      await fs.promises.writeFile(filePath, Buffer.from(screenshotBuffer, 'base64'));
+      console.log(`Screenshot opgeslagen: ${filePath}`);
+    }
+
+    return screenshotBuffer;
+  } finally {
+    await browser.close();
+  }
 }
 
 // Test-run lokaal
