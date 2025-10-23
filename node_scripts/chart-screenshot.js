@@ -55,9 +55,10 @@ export async function generateChartScreenshot({ school, leerlingId, schooljaar, 
         executablePath: process.env.PUPPETEER_EXECUTABLE_PATH
     });
   const page = await browser.newPage();
-  await page.setViewport({ width: 1000, height: 800 });
+  const chartHeight = await page.$eval('#chart-export', el => parseInt(el.dataset.height) || 800);
+  await page.setViewport({ width: 1200, height: chartHeight + 70 });
+  //await page.setViewport({ width: 1000, height: 800 });
 
-  console.log(`Opening chart page: ${url}`);
   await page.goto(url, { waitUntil: 'networkidle0' });
 
   // Eventuele extra wachttijd voor asynchroon laden van charts
