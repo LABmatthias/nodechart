@@ -50,8 +50,9 @@ export async function generateChartScreenshot({ school, leerlingId, schooljaar, 
   const url = `https://apps4lab.be/rapport/chart/${school}/${leerlingId}/${schooljaar}/${periode}`;
 
   const browser = await puppeteer.launch({
-    headless: true,
-    args: ['--no-sandbox', '--disable-setuid-sandbox'] // vaak nodig op shared hosting
+        headless: "new",
+        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH
     });
   const page = await browser.newPage();
   await page.setViewport({ width: 1000, height: 800 });

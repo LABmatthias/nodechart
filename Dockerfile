@@ -1,38 +1,55 @@
-# Gebruik een officiële Node.js image als basis
+# Gebruik Node.js 20 image
 FROM node:20-bullseye
 
-# Installeer Chrome dependencies
-RUN apt-get update && apt-get install -y \
-    gconf-service libasound2 libatk1.0-0 libc6 libcairo2 libcups2 \
-    libdbus-1-3 libexpat1 libfontconfig1 libgcc1 libgconf-2-4 \
-    libglib2.0-0 libgtk-3-0 libnspr4 libnss3 libpango-1.0-0 \
-    libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 \
-    libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 \
-    libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates \
-    fonts-liberation libgbm1 lsb-release wget xdg-utils -y \
-    --no-install-recommends && rm -rf /var/lib/apt/lists/*
-
-# Installeer puppeteer afhankelijkheden
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-
-# Stel werkdirectory in
-WORKDIR /app
+# Werkdirectory instellen
+WORKDIR /usr/src/app
 
 # Kopieer package.json en package-lock.json
 COPY package*.json ./
 
-# Installeer Node.js dependencies
-RUN npm install
+# Puppeteer en dependencies installeren
+RUN apt-get update && apt-get install -y \
+    wget \
+    gnupg \
+    ca-certificates \
+    fonts-liberation \
+    libnss3 \
+    libx11-xcb1 \
+    libxcomposite1 \
+    libxcursor1 \
+    libxdamage1 \
+    libxext6 \
+    libxfixes3 \
+    libxi6 \
+    libxtst6 \
+    libgbm1 \
+    libasound2 \
+    libpangocairo-1.0-0 \
+    libpango-1.0-0 \
+    libatk1.0-0 \
+    libcups2 \
+    libatk-bridge2.0-0 \
+    libxrandr2 \
+    libgtk-3-0 \
+    --no-install-recommends \
+    && rm -rf /var/lib/apt/lists/*
 
-# Kopieer de rest van de code
+# Installeer Google Chrome
+RUN wget -q -O /tmp/chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
+    && apt install -y /tmp/chrome.deb \
+    && rm /tmp/chrome.deb
+
+# Kopieer projectbestanden
 COPY . .
 
-# Puppeteer launch opties
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome
-ENV NODE_ENV=production
+# Installeer npm dependencies
+RUN npm install
 
-# Expose de poort waarop jouw server draait
+# Zet environment variable voor Puppeteer
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome
+
+# Open poort (optioneel, Cloud Run gebruikt deze dynamisch)
 EXPOSE 8080
 
-# Start de server
+# Start je server
 CMD ["node", "node_scripts/chart-server.js"]
